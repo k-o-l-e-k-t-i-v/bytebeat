@@ -1,0 +1,4 @@
+#!/bin/bash
+string="$1"
+echo "main(t){for(t=0;;t++)putchar((char)($1));}" | gcc -x c - -lm -o /tmp/bytebeat && /tmp/bytebeat | aplay -r $2 - 
+#mplayer -fs -really-quiet -demuxer rawvideo -rawvideo fps=44.1:w=32:h=24:y8 /dev/stdin
