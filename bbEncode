@@ -1,0 +1,35 @@
+#!/bin/bash
+cat "$1" | ffmpeg \
+    -vsync cfr \
+    -c:v rawvideo\
+    -top:v 1 \
+    -video_size 640x360 \
+    -pixel_format yuv420p \
+    -f rawvideo \
+    -fflags nobuffer \
+    -i - \
+    -c:a pcm_s16le \
+    -ac 2 \
+    -ar 55296000 \
+    -f s16le \
+    -fflags nobuffer \
+    -analyzeduration 0 \
+    -i - \
+    -c:v libx264 \
+    -thread_type:v slice+frame \
+    -map 0:0,1:0 \
+    -map 1:0 \
+    -loglevel info \
+    -vf "scale=1280:720" \
+    -af "aresample=async=1" \
+    -profile:v main \
+    -preset:v faster \
+    -tune zerolatency \
+    -g 60 \
+    -x264opts level=3.1:bitrate=1000:vbv-bufsize=2000:vbv-maxrate=1000 \
+    -strict -2 \
+    -acodec aac \
+    -ab 192000 \
+    -ac 2 \
+    -ar 44100 \
+    -r 30 out.mp4

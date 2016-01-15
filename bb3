@@ -1,0 +1,20 @@
+#!/bin/bash
+let "W=800"
+let "H=450"
+F=60
+WW=800
+HH=450
+PID="$(pidof mpv)"
+let "R = $W * $H * $F "
+echo "calculated rate: $R pix/s"
+FORMAT=rgb8
+S="$1"
+(echo "main(t){for(t=0;;t++){int w=$W;int h=$H;int x=t%w;int y=((t/w)%h);int f=((int)(t/(w*h)));putchar($S); if(t/(w*h)); }}" | gcc -x c - -lm -o /tmp/bytebeat && \
+  (
+  (mkfifo /tmp/bytes)
+  (/tmp/bytebeat >> /tmp/bytes)&
+  (cat /tmp/bytes | mpv --cache=no --demuxer=rawvideo --demuxer-rawvideo-mp-format=$FORMAT --demuxer-rawvideo-fps=$F --demuxer-rawvideo-w=$W --demuxer-rawvideo-h=$H  --geometry=$WWx$HH+0+0 --demuxer-thread=yes - && (killall aplay ;killall mpv) ) 
+)
+)
+ #yuv444p yuv422p yuv440p yuv420p yuv411p yuv410p yuv444p16 yuv444p14 yuv444p12 yuv444p10 yuv444p9 yuv422p16 yuv422p14 yuv422p12 yuv422p10 yuv422p9 yuv420p16 yuv420p14 yuv420p12 yuv420p10 yuv420p9 yuva444p yuva422p yuva420p gray gray16 ya8 ya16 yuyv422 uyvy422 nv12 nv21 argb bgra abgr rgba bgr24 rgb24 rgb48 rgba64 bgra64 0rgb bgr0 0bgr rgb0 bgr8 rgb8 bgr4_byte rgb4_byte bgr4 rgb4 monob monow rgb444 rgb555 rgb565 bgr444 bgr555 bgr565 pal8 gbrp xyz12 vdpau vdpau_output vda vaapi dxva2_vld mmal xvmcmc xvmcidct uyyvyy411 gray16be vdpau_h264 vdpau_mpeg1 vdpau_mpeg2 vdpau_wmv3 vdpau_vc1 rgb48be rgb565be rgb555be bgr565be bgr555be vaapi_moco vaapi_idct yuv420p16be yuv422p16be yuv444p16be vdpau_mpeg4 rgb444be bgr444be bgr48be bgr48 yuv420p9be yuv420p10be yuv422p10be yuv444p9be yuv444p10be yuv422p9be vda_vld gbrp9be gbrp9 gbrp10be gbrp10 gbrp16be gbrp16 yuva420p9be yuva420p9 yuva422p9be yuva422p9 yuva444p9be yuva444p9 yuva420p10be yuva420p10 yuva422p10be yuva422p10 yuva444p10be yuva444p10 yuva420p16be yuva420p16 yuva422p16be yuva422p16 yuva444p16be yuva444p16 xyz12be nv16 nv20 nv20be yvyu422 vda ya16be qsv rgba64be bgra64be yuv420p12be yuv420p14be yuv422p12be yuv422p14be yuv444p12be yuv444p14be gbrp12be gbrp12 gbrp14be gbrp14 gbrap gbrap16be gbrap16 yuvj411p bayer_bggr8 bayer_rggb8 bayer_gbrg8 bayer_grbg8 bayer_bggr16 bayer_bggr16be bayer_rggb16 bayer_rggb16be bayer_gbrg16 bayer_gbrg16be bayer_grbg16 bayer_grbg16be
+

@@ -1,0 +1,2 @@
+#!/bin/bash
+cat /tmp/last.raw | ffmpeg -f rawvideo -pix_fmt rgb555 -s 32x18 -r 60 -i - -f s16le -ac 1 -ar 34560 -i - -s 1280x720 -r 60 -c:v libvpx -qmin 10 -qmax 40 -b:v 12m -cpu-used 3 -ac 2 -c:a vorbis -ar 44100 -strict -2 -threads 4 -f webm - > /tmp/test.webm
